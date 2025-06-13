@@ -166,7 +166,7 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
             end
         })
     end
-}, -- Obsidian連携
+}, -- Obsidian設定からテンプレート機能を削除
 {
     "epwalsh/obsidian.nvim",
     version = "*",
@@ -182,79 +182,102 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
                 name = "garden",
                 path = "~/asobiba/garden-glxy96"
             }},
-            notes_subdir = "daily",
-            daily_notes = {
-                folder = "daily",
-                date_format = "%Y/%m/%d",
-                template = "templates/daily.md"
-            },
-            templates = {
-                subdir = "templates",
-                date_format = "%Y-%m-%d",
-                time_format = "%H:%M",
-                -- テンプレート内の置換パターンを定義
-                substitutions = {
-                  ["YYYY-MM-DD"] = function()
-                      -- 現在のバッファのファイル名から日付を取得
-                      local filepath = vim.fn.expand('%:p')
-                      local pattern = '.*/(%d%d%d%d)/(%d%d)/(%d%d).md$'
-                      local year, month, day = filepath:match(pattern)
-                      
-                      if year and month and day then
-                          -- ファイル名から日付を組み立て
-                          return string.format('%s-%s-%s', year, month, day)
-                      end
-                      
-                      -- ファイル名からの取得に失敗した場合は現在日時を返す
-                      return os.date('%Y-%m-%d')
-                  end,
-              },
-            },
-            -- テンプレートの日付置換を有効化
             note_id_func = function(title)
-                -- デイリーノートの場合は日付形式に変換
-                if title:match("^%d%d%d%d/%d%d/%d%d$") then
-                    return title:gsub("/", "-")
-                end
                 return title
             end,
-            -- テンプレート処理用のフック
-            open_notes_in = "current",
-            hooks = {
-              after_note_creation = function(note)
-                  -- ファイルパスから日付を抽出
-                  local date_pattern = ".*/(%d%d%d%d)/(%d%d)/(%d%d).md$"
-                  local year, month, day = note.path:match(date_pattern)
-                  
-                  if year and month and day then
-                      -- バッファの内容を取得
-                      local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-                      -- ファイルパスから取得した日付で置換
-                      local target_date = string.format("%s-%s-%s", year, month, day)
-                      
-                      -- 各行を処理
-                      for i, line in ipairs(lines) do
-                          lines[i] = line:gsub("YYYY%-MM%-DD", target_date)
-                      end
-                      
-                      -- 更新した内容をバッファに書き戻す
-                      vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
-                  end
-              end,
-          }
+            open_notes_in = "current"
+            -- daily_notes、templates設定を削除
         })
 
-        -- Obsidianのキーマップ
-        vim.keymap.set('n', '<leader>jd', '<cmd>ObsidianToday<CR>', {
-            desc = 'Open today note'
-        })
-        vim.keymap.set('n', '<leader>jy', '<cmd>ObsidianYesterday<CR>', {
-            desc = 'Open yesterday note'
-        })
-        vim.keymap.set('n', '<leader>jt', '<cmd>ObsidianTomorrow<CR>', {
-            desc = 'Open tomorrow note'
-        })
+        -- カスタムデイリーノート作成機能
+        local function create_daily_note()
+            local date = os.date("*t")
+            local year = date.year
+            local month = string.format("%02d", date.month)
+            local day = string.format("%02d", date.day)
+            
+            -- ディレクトリ作成
+            local dir_path = string.format("daily/%d/%s", year, month)
+            vim.fn.mkdir(dir_path, "p")
+            
+            -- ファイルパス
+            local file_path = string.format("%s/%s.md", dir_path, day)
+            
+            -- ファイルを開く
+            vim.cmd('edit ' .. file_path)
+            
+            -- 新規ファイルの場合、テンプレートを挿入
+            if vim.fn.filereadable(vim.fn.expand('%:p')) == 0 then
+                local target_date = string.format("%d-%s-%s", year, month, day)
+                
+                -- テンプレートファイルを読み込み
+                local template_path = vim.fn.expand('~/asobiba/garden-glxy96/templates/daily.md')
+                if vim.fn.filereadable(template_path) == 1 then
+                    local template_lines = vim.fn.readfile(template_path)
+                    
+                    -- YYYY-MM-DDを実際の日付に置換
+                    for i, line in ipairs(template_lines) do
+                        template_lines[i] = line:gsub("YYYY%-MM%-DD", target_date)
+                    end
+                    
+                    -- フロントマター追加
+                    local final_content = {
+                        "---",
+                        string.format('id: "%s"', day),
+                        "aliases: []",
+                        "tags:",
+                        "  - daily-notes",
+                        "---",
+                        ""
+                    }
+                    
+                    -- テンプレートの内容を追加（フロントマターは除く）
+                    for _, line in ipairs(template_lines) do
+                        table.insert(final_content, line)
+                    end
+                    
+                    vim.api.nvim_buf_set_lines(0, 0, -1, false, final_content)
+                    
+                    -- Tasksセクションにカーソル移動
+                    for i, line in ipairs(final_content) do
+                        if line:match("^## Tasks") then
+                            vim.api.nvim_win_set_cursor(0, {i + 2, 4})
+                            break
+                        end
+                    end
+                else
+                    print("Template file not found: " .. template_path)
+                end
+            end
+        end
 
+        -- キーマップを独自関数に変更
+        vim.keymap.set('n', '<leader>jd', create_daily_note, {
+            desc = 'Create/Open today note'
+        })
+        
+        -- 昨日・明日用の関数も作成
+        vim.keymap.set('n', '<leader>jy', function()
+            local yesterday = os.time() - 86400 -- 24時間前
+            local date = os.date("*t", yesterday)
+            local year = date.year
+            local month = string.format("%02d", date.month)
+            local day = string.format("%02d", date.day)
+            local file_path = string.format("daily/%d/%s/%s.md", year, month, day)
+            vim.cmd('edit ' .. file_path)
+        end, { desc = 'Open yesterday note' })
+        
+        vim.keymap.set('n', '<leader>jt', function()
+            local tomorrow = os.time() + 86400 -- 24時間後
+            local date = os.date("*t", tomorrow)
+            local year = date.year
+            local month = string.format("%02d", date.month)
+            local day = string.format("%02d", date.day)
+            local file_path = string.format("daily/%d/%s/%s.md", year, month, day)
+            vim.cmd('edit ' .. file_path)
+        end, { desc = 'Open tomorrow note' })
+
+        -- ウィークリーノート（既存のまま）
         -- ウィークリーノート作成機能
         local function create_weekly_note()
             local current_date = os.date("*t")
@@ -301,7 +324,7 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
             desc = 'Create/Open weekly note'
         })
     end
-}, 
+},
 {
     "folke/which-key.nvim",
     event = "VeryLazy",
