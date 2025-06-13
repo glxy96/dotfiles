@@ -1,0 +1,19 @@
+[commit]
+	template = /Users/ginga/.commit_template
+[user]
+	name = glxy96
+	email = 173794347+glxy96@users.noreply.github.com
+[init]
+	defaultBranch = main
+[core]
+	editor = nvim
+	autocrlf = input
+[push]
+	default = simple
+[color]
+	ui = auto
+[pull]
+	rebase = false
+[rebase]
+	autoStash = true
+

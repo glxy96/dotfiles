@@ -1,0 +1,40 @@
+Host raspi
+  HostName 192.168.50.200
+  User pi
+  Port 54321
+  IdentityFile ~/.ssh/id_rsa
+
+Host ubuntu
+  HostName 192.168.50.100
+  User ginga
+  Port 54321
+  IdentityFile ~/.ssh/ubuntu_home
+
+# Host ubuntu
+#   HostName ginga-verif.asuscomm.com
+#   User ginga
+#   Port 54321
+#   IdentityFile ~/.ssh/ubuntu_home
+
+# Ginga313のほうのやつ
+# Host github github.com
+#   HostName github.com
+#   IdentityFile ~/.ssh/id_rsa_git
+#   User git
+
+Host github github.com
+  Hostname github.com
+  IdentityFile ~/.ssh/id_ed25519_github_glxy96
+  User git
+
+Host rpizero01
+  HostName 192.168.50.198
+  User ginga
+  Port 54321
+  IdentityFile ~/.ssh/id_rsa_rpizero01
+
+Host rpizero02
+  HostName 192.168.50.199
+  User ginga
+  Port 54321
+  IdentityFile ~/.ssh/id_rsa_rpizero02
