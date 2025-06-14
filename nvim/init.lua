@@ -1,6 +1,6 @@
 -----------------------------------------------------------
 -- Neovim設定ファイル
--- 最終更新: 2025-02-03
+-- 最終更新: 2025-06-05
 -----------------------------------------------------------
 --[[
 基本設定の概要:
@@ -467,34 +467,3 @@ vim.api.nvim_create_autocmd("VimEnter", {
     end
 })
 
--- -- デイリーノートのテンプレート処理
--- vim.api.nvim_create_autocmd("BufNewFile", {
---     pattern = "*/daily/*/[0-9][0-9][0-9][0-9]/[0-9][0-9]/[0-9][0-9].md",
---     callback = function()
---         -- 現在の日付を取得
---         local current_date = os.date("%Y-%m-%d")
-
---         -- バッファの内容を取得
---         local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-
---         -- テンプレートの内容を読み込み
---         local template_path = vim.fn.expand('~/asobiba/garden-glxy96/templates/daily.md')
---         local template_content = vim.fn.readfile(template_path)
-
---         -- テンプレートの日付を置換
---         for i, line in ipairs(template_content) do
---             template_content[i] = line:gsub("YYYY%-MM%-DD", current_date)
---         end
-
---         -- バッファに書き込み
---         vim.api.nvim_buf_set_lines(0, 0, -1, false, template_content)
-
---         -- カーソルを Tasks の下に移動
---         for i, line in ipairs(template_content) do
---             if line:match("^## Tasks") then
---                 vim.api.nvim_win_set_cursor(0, {i + 2, 4})
---                 break
---             end
---         end
---     end
--- })
