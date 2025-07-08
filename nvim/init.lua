@@ -79,7 +79,7 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
     build = ":TSUpdate",
     config = function()
         require("nvim-treesitter.configs").setup({
-            ensure_installed = {"lua", "vim", "markdown", "markdown_inline"},
+            ensure_installed = {"lua", "vim", "markdown", "markdown_inline", "regex", "bash" },
             highlight = {
                 enable = true,
                 additional_vim_regex_highlighting = false
