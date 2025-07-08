@@ -427,7 +427,7 @@ vim.api.nvim_create_autocmd("FileType", {
     callback = function()
         -- 表示設定
         vim.opt_local.wrap = true -- 長い行を折り返し
-        vim.opt_local.conceallevel = 0 -- Markdown記号を表示
+        vim.opt_local.conceallevel = 1 -- Markdownをライブプレビューに
         vim.opt_local.foldenable = false -- 折りたたみを無効化
 
         -- インデント設定
