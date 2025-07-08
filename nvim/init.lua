@@ -182,6 +182,8 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
                 name = "garden",
                 path = "~/asobiba/garden-glxy96"
             }},
+            notes_subdir = "inbox/temporary",
+            new_notes_location = "notes_subdir",
             note_id_func = function(title)
                 return title or "untitled"
             end,
@@ -276,7 +278,12 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
             local file_path = string.format("daily/%d/%s/%s.md", year, month, day)
             vim.cmd('edit ' .. file_path)
         end, { desc = 'Open tomorrow note' })
-
+        
+        -- キーマップ追加
+        vim.keymap.set('n', '<leader>nn', function()
+            vim.cmd('ObsidianNew inbox/temporary/')
+        end, { desc = 'New note in inbox' })
+        
         -- ウィークリーノート（既存のまま）
         -- ウィークリーノート作成機能
         local function create_weekly_note()
