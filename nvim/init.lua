@@ -277,10 +277,8 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
         })
 
         -- キーマップ追加
-        vim.keymap.set('n', '<leader>nn', function()
-            vim.cmd('ObsidianNew inbox/temporary/')
-        end, {
-            desc = 'New note in inbox'
+        vim.keymap.set('n', '<leader>nn', ':ObsidianNew ', { 
+            desc = 'New note in inbox' 
         })
 
         -- ウィークリーノート（既存のまま）
