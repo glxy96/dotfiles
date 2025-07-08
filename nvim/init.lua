@@ -183,7 +183,7 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
                 path = "~/asobiba/garden-glxy96"
             }},
             note_id_func = function(title)
-                return title
+                return title or "untitled"
             end,
             open_notes_in = "current"
             -- daily_notes、templates設定を削除
