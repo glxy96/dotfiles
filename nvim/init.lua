@@ -79,7 +79,7 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
     build = ":TSUpdate",
     config = function()
         require("nvim-treesitter.configs").setup({
-            ensure_installed = {"lua", "vim", "markdown", "markdown_inline", "regex", "bash" },
+            ensure_installed = {"lua", "vim", "markdown", "markdown_inline", "regex", "bash"},
             highlight = {
                 enable = true,
                 additional_vim_regex_highlighting = false
@@ -197,49 +197,42 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
             local year = date.year
             local month = string.format("%02d", date.month)
             local day = string.format("%02d", date.day)
-            
+
             -- ディレクトリ作成
             local dir_path = string.format("daily/%d/%s", year, month)
             vim.fn.mkdir(dir_path, "p")
-            
+
             -- ファイルパス
             local file_path = string.format("%s/%s.md", dir_path, day)
-            
+
             -- ファイルを開く
             vim.cmd('edit ' .. file_path)
-            
+
             -- 新規ファイルの場合、テンプレートを挿入
             if vim.fn.filereadable(vim.fn.expand('%:p')) == 0 then
                 local target_date = string.format("%d-%s-%s", year, month, day)
-                
+
                 -- テンプレートファイルを読み込み
                 local template_path = vim.fn.expand('~/asobiba/garden-glxy96/templates/daily.md')
                 if vim.fn.filereadable(template_path) == 1 then
                     local template_lines = vim.fn.readfile(template_path)
-                    
+
                     -- YYYY-MM-DDを実際の日付に置換
                     for i, line in ipairs(template_lines) do
                         template_lines[i] = line:gsub("YYYY%-MM%-DD", target_date)
                     end
-                    
+
                     -- フロントマター追加
-                    local final_content = {
-                        "---",
-                        string.format('id: "%s"', day),
-                        "aliases: []",
-                        "tags:",
-                        "  - daily-notes",
-                        "---",
-                        ""
-                    }
-                    
+                    local final_content = {"---", string.format('id: "%s"', day), "aliases: []", "tags:",
+                                           "  - daily-notes", "---", ""}
+
                     -- テンプレートの内容を追加（フロントマターは除く）
                     for _, line in ipairs(template_lines) do
                         table.insert(final_content, line)
                     end
-                    
+
                     vim.api.nvim_buf_set_lines(0, 0, -1, false, final_content)
-                    
+
                     -- Tasksセクションにカーソル移動
                     for i, line in ipairs(final_content) do
                         if line:match("^## Tasks") then
@@ -257,7 +250,7 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
         vim.keymap.set('n', '<leader>jd', create_daily_note, {
             desc = 'Create/Open today note'
         })
-        
+
         -- 昨日・明日用の関数も作成
         vim.keymap.set('n', '<leader>jy', function()
             local yesterday = os.time() - 86400 -- 24時間前
@@ -267,8 +260,10 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
             local day = string.format("%02d", date.day)
             local file_path = string.format("daily/%d/%s/%s.md", year, month, day)
             vim.cmd('edit ' .. file_path)
-        end, { desc = 'Open yesterday note' })
-        
+        end, {
+            desc = 'Open yesterday note'
+        })
+
         vim.keymap.set('n', '<leader>jt', function()
             local tomorrow = os.time() + 86400 -- 24時間後
             local date = os.date("*t", tomorrow)
@@ -277,13 +272,17 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
             local day = string.format("%02d", date.day)
             local file_path = string.format("daily/%d/%s/%s.md", year, month, day)
             vim.cmd('edit ' .. file_path)
-        end, { desc = 'Open tomorrow note' })
-        
+        end, {
+            desc = 'Open tomorrow note'
+        })
+
         -- キーマップ追加
         vim.keymap.set('n', '<leader>nn', function()
             vim.cmd('ObsidianNew inbox/temporary/')
-        end, { desc = 'New note in inbox' })
-        
+        end, {
+            desc = 'New note in inbox'
+        })
+
         -- ウィークリーノート（既存のまま）
         -- ウィークリーノート作成機能
         local function create_weekly_note()
@@ -331,8 +330,7 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
             desc = 'Create/Open weekly note'
         })
     end
-},
-{
+}, {
     "folke/which-key.nvim",
     event = "VeryLazy",
     init = function()
@@ -344,26 +342,22 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
             -- 設定をカスタマイズする場合はここに記述
         })
     end
-},
-{
+}, {
     "folke/noice.nvim",
     event = "VeryLazy",
-    dependencies = {
-        "MunifTanjim/nui.nvim",
-        "rcarriga/nvim-notify",
-    },
+    dependencies = {"MunifTanjim/nui.nvim", "rcarriga/nvim-notify"},
     config = function()
         require("noice").setup({
             cmdline = {
                 enabled = true,
-                view = "cmdline_popup", -- ホバー形式の表示
+                view = "cmdline_popup" -- ホバー形式の表示
             },
             messages = {
-                enabled = true,
+                enabled = true
             },
             popupmenu = {
-                enabled = true,
-            },
+                enabled = true
+            }
         })
     end
 }, -- 補完エンジン: nvim-cmp
