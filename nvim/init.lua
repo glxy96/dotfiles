@@ -166,6 +166,36 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
             end
         })
     end
+}, {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    init = function()
+        vim.o.timeout = true
+        vim.o.timeoutlen = 300
+    end,
+    config = function()
+        require("which-key").setup({
+            -- 設定をカスタマイズする場合はここに記述
+        })
+    end
+}, {
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    dependencies = {"MunifTanjim/nui.nvim", "rcarriga/nvim-notify"},
+    config = function()
+        require("noice").setup({
+            cmdline = {
+                enabled = true,
+                view = "cmdline_popup" -- ホバー形式の表示
+            },
+            messages = {
+                enabled = true
+            },
+            popupmenu = {
+                enabled = true
+            }
+        })
+    end
 }, -- Obsidian設定からテンプレート機能を削除
 {
     "epwalsh/obsidian.nvim",
@@ -277,8 +307,8 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
         })
 
         -- キーマップ追加
-        vim.keymap.set('n', '<leader>nn', ':ObsidianNew ', { 
-            desc = 'New note in inbox' 
+        vim.keymap.set('n', '<leader>nn', ':ObsidianNew ', {
+            desc = 'New note in inbox'
         })
 
         -- ウィークリーノート（既存のまま）
@@ -326,36 +356,6 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
 
         vim.keymap.set('n', '<leader>jw', create_weekly_note, {
             desc = 'Create/Open weekly note'
-        })
-    end
-}, {
-    "folke/which-key.nvim",
-    event = "VeryLazy",
-    init = function()
-        vim.o.timeout = true
-        vim.o.timeoutlen = 300
-    end,
-    config = function()
-        require("which-key").setup({
-            -- 設定をカスタマイズする場合はここに記述
-        })
-    end
-}, {
-    "folke/noice.nvim",
-    event = "VeryLazy",
-    dependencies = {"MunifTanjim/nui.nvim", "rcarriga/nvim-notify"},
-    config = function()
-        require("noice").setup({
-            cmdline = {
-                enabled = true,
-                view = "cmdline_popup" -- ホバー形式の表示
-            },
-            messages = {
-                enabled = true
-            },
-            popupmenu = {
-                enabled = true
-            }
         })
     end
 }, -- 補完エンジン: nvim-cmp
