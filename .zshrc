@@ -54,8 +54,6 @@ alias ls="gls --color=auto"
 alias wol='wakeonlan'
 
 ### Zinitプラグイン
-# NVM管理
-# zinit light lukechilds/zsh-nvm # fnmに移行
 
 # 補完・サジェスト
 zinit load zsh-users/zsh-autosuggestions
@@ -65,7 +63,7 @@ zinit load zsh-users/zsh-completions
 zinit ice wait'!0'; zinit load zdharma/history-search-multi-word
 zinit ice wait'!0'; zinit load zsh-users/zsh-history-substring-search
 
-# fnm
+# nodeバージョン管理(fnm)
 eval "$(fnm env --use-on-cd)"
 
 # シンタックスハイライト（最後に配置）
