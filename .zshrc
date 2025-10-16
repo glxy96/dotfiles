@@ -22,6 +22,9 @@ fi
 # ghcup (Haskell)
 [ -f "$HOME/.ghcup/env" ] && . "$HOME/.ghcup/env"
 
+# SuperCollider
+export PATH="/Applications/SuperCollider.app/Contents/MacOS:$PATH"
+
 ### Zsh基本設定
 # ディレクトリ移動
 setopt auto_cd
@@ -52,7 +55,7 @@ alias wol='wakeonlan'
 
 ### Zinitプラグイン
 # NVM管理
-zinit light lukechilds/zsh-nvm
+# zinit light lukechilds/zsh-nvm # fnmに移行
 
 # 補完・サジェスト
 zinit load zsh-users/zsh-autosuggestions
@@ -61,6 +64,9 @@ zinit load zsh-users/zsh-completions
 # ヒストリー検索
 zinit ice wait'!0'; zinit load zdharma/history-search-multi-word
 zinit ice wait'!0'; zinit load zsh-users/zsh-history-substring-search
+
+# fnm
+eval "$(fnm env --use-on-cd)"
 
 # シンタックスハイライト（最後に配置）
 zinit ice wait'!0'; zinit light zsh-users/zsh-syntax-highlighting
