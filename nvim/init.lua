@@ -127,7 +127,24 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
             desc = 'Help tags'
         })
     end
-}, -- Markdownプレビュー
+}, -- ファイルアイコン
+{ 
+    "nvim-tree/nvim-web-devicons", lazy = true 
+},
+
+   -- ファイルエクスプローラー
+{
+    "nvim-tree/nvim-tree.lua",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+        require("nvim-tree").setup({
+            -- ここで細かい設定が可能ですが、まずはデフォルトでOK
+            view = {
+                width = 30, -- 幅を30文字に設定
+            },
+        })
+    end
+},-- Markdownプレビュー
 {
     "previm/previm",
     ft = {"markdown"},
@@ -448,6 +465,9 @@ end, {
     desc = 'Toggle wrap'
 })
 
+vim.keymap.set('n', '<leader>e', ':NvimTreeToggle<CR>', {
+    desc = 'Toggle file explorer'
+})
 -----------------------------------------------------------
 -- その他の自動コマンド
 -----------------------------------------------------------
