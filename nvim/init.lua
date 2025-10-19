@@ -221,6 +221,9 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
     dependencies = {"nvim-lua/plenary.nvim"},
     config = function()
         require("obsidian").setup({
+            -- デバッグ用ログ設定（問題解決後はコメントアウト推奨）
+            -- log_level = vim.log.levels.DEBUG,
+            
             completion = {
                 nvim_cmp = true,
                 min_chars = 2
@@ -285,6 +288,9 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
             vim.cmd('edit ' .. file_path)
 
             if vim.fn.filereadable(vim.fn.expand('%:p')) == 0 then
+                -- バッファが編集可能であることを確認
+                vim.opt_local.modifiable = true
+                
                 local target_date = string.format("%d-%s-%s", year, month, day)
                 local template_path = vim.fn.expand('~/pkm/templates/daily.md')
                 
@@ -309,14 +315,17 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
                         table.insert(final_content, line)
                     end
 
-                    vim.api.nvim_buf_set_lines(0, 0, -1, false, final_content)
+                    -- Treesitterの処理を待ってからバッファを設定
+                    vim.schedule(function()
+                        vim.api.nvim_buf_set_lines(0, 0, -1, false, final_content)
 
-                    for i, line in ipairs(final_content) do
-                        if line:match("^## Tasks") then
-                            vim.api.nvim_win_set_cursor(0, {i + 2, 4})
-                            break
+                        for i, line in ipairs(final_content) do
+                            if line:match("^## Tasks") then
+                                vim.api.nvim_win_set_cursor(0, {i + 2, 4})
+                                break
+                            end
                         end
-                    end
+                    end)
                 else
                     print("Template file not found: " .. template_path)
                 end
@@ -359,6 +368,9 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
 
             -- 新規ファイルの場合のみテンプレートを適用
             if vim.fn.filereadable(vim.fn.expand('%:p')) == 0 then
+                -- バッファが編集可能であることを確認
+                vim.opt_local.modifiable = true
+                
                 local template_path = vim.fn.expand('~/pkm/templates/weekly.md')
                 
                 if vim.fn.filereadable(template_path) == 1 then
@@ -392,15 +404,18 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
                         table.insert(final_content, processed_line)
                     end
                     
-                    vim.api.nvim_buf_set_lines(0, 0, -1, false, final_content)
-                    
-                    -- カーソルを最初のセクションに移動
-                    for i, line in ipairs(final_content) do
-                        if line:match("^## 前の週のアクション") then
-                            vim.api.nvim_win_set_cursor(0, {i + 2, 0})
-                            break
+                    -- Treesitterの処理を待ってからバッファを設定
+                    vim.schedule(function()
+                        vim.api.nvim_buf_set_lines(0, 0, -1, false, final_content)
+                        
+                        -- カーソルを最初のセクションに移動
+                        for i, line in ipairs(final_content) do
+                            if line:match("^## 前の週のアクション") then
+                                vim.api.nvim_win_set_cursor(0, {i + 2, 0})
+                                break
+                            end
                         end
-                    end
+                    end)
                 else
                     print("Template file not found: " .. template_path)
                 end
