@@ -227,7 +227,7 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
             },
             workspaces = {{
                 name = "garden",
-                path = "~/asobiba/garden-glxy96"
+                path = "~/pkm"
             }},
             notes_subdir = "inbox/temporary",
             new_notes_location = "notes_subdir",
@@ -260,7 +260,7 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
                 local target_date = string.format("%d-%s-%s", year, month, day)
 
                 -- テンプレートファイルを読み込み
-                local template_path = vim.fn.expand('~/asobiba/garden-glxy96/templates/daily.md')
+                local template_path = vim.fn.expand('~/pkm/templates/daily.md')
                 if vim.fn.filereadable(template_path) == 1 then
                     local template_lines = vim.fn.readfile(template_path)
 
@@ -363,7 +363,7 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
             vim.cmd('edit ' .. filename)
 
             if vim.fn.filereadable(vim.fn.expand('%:p')) == 0 then
-                local template_path = vim.fn.expand('~/asobiba/garden-glxy96/templates/weekly.md')
+                local template_path = vim.fn.expand('~/pkm/templates/weekly.md')
                 local template_content = vim.fn.readfile(template_path)
                 local title = string.format("# %d年%s月 第%02d週", year, month, week)
                 template_content[1] = title

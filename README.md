@@ -59,7 +59,7 @@ nvim --headless "+Lazy! sync" +qa
 ノート管理機能を使用する場合は、以下のディレクトリを作成してください：
 
 ```bash
-mkdir -p ~/asobiba/garden-glxy96/{daily,weekly,inbox/temporary,templates}
+mkdir -p ~/pkm/{daily,weekly,inbox/temporary,templates}
 ```
 
 ## トラブルシューティング
