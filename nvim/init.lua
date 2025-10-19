@@ -213,7 +213,7 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
             }
         })
     end
-}, -- Obsidian設定からテンプレート機能を削除
+}, -- Obsidian設定
 {
     "epwalsh/obsidian.nvim",
     version = "*",
@@ -221,6 +221,9 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
     dependencies = {"nvim-lua/plenary.nvim"},
     config = function()
         require("obsidian").setup({
+            -- デバッグ用ログ設定（問題解決後はコメントアウト推奨）
+            -- log_level = vim.log.levels.DEBUG,
+            
             completion = {
                 nvim_cmp = true,
                 min_chars = 2
@@ -234,102 +237,102 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
             note_id_func = function(title)
                 return title or "untitled"
             end,
-            open_notes_in = "current"
-            -- daily_notes、templates設定を削除
+            open_notes_in = "current",
+            
+            -- フロントマターのカスタム処理
+            note_frontmatter_func = function(note)
+                -- 基本フィールド
+                local out = { 
+                    id = note.id, 
+                    aliases = note.aliases, 
+                    tags = note.tags 
+                }
+                
+                -- 日付フィールドは自動更新（Obsidian.nvimのデフォルト動作）
+                if note.metadata ~= nil and note.metadata.frontmatter ~= nil then
+                    local fm = note.metadata.frontmatter
+                    
+                    -- draft と publish は既存の値を保持（変更しない）
+                    if fm.draft ~= nil then
+                        out.draft = fm.draft
+                    end
+                    if fm.publish ~= nil then
+                        out.publish = fm.publish
+                    end
+                    
+                    -- その他のカスタムフィールドも保持
+                    -- 必要に応じて追加
+                    for key, value in pairs(fm) do
+                        if key ~= "id" and key ~= "aliases" and key ~= "tags" 
+                           and key ~= "created" and key ~= "modified" and key ~= "published" then
+                            out[key] = value
+                        end
+                    end
+                end
+                
+                return out
+            end,
         })
 
-        -- カスタムデイリーノート作成機能
+        -- カスタムデイリーノート作成機能（既存のコードそのまま）
         local function create_daily_note()
             local date = os.date("*t")
             local year = date.year
             local month = string.format("%02d", date.month)
             local day = string.format("%02d", date.day)
 
-            -- ディレクトリ作成
             local dir_path = string.format("daily/%d/%s", year, month)
             vim.fn.mkdir(dir_path, "p")
 
-            -- ファイルパス
             local file_path = string.format("%s/%s.md", dir_path, day)
-
-            -- ファイルを開く
             vim.cmd('edit ' .. file_path)
 
-            -- 新規ファイルの場合、テンプレートを挿入
             if vim.fn.filereadable(vim.fn.expand('%:p')) == 0 then
+                -- バッファが編集可能であることを確認
+                vim.opt_local.modifiable = true
+                
                 local target_date = string.format("%d-%s-%s", year, month, day)
-
-                -- テンプレートファイルを読み込み
                 local template_path = vim.fn.expand('~/pkm/templates/daily.md')
+                
                 if vim.fn.filereadable(template_path) == 1 then
                     local template_lines = vim.fn.readfile(template_path)
 
-                    -- YYYY-MM-DDを実際の日付に置換
                     for i, line in ipairs(template_lines) do
                         template_lines[i] = line:gsub("YYYY%-MM%-DD", target_date)
                     end
 
-                    -- フロントマター追加
-                    local final_content = {"---", string.format('id: "%s"', day), "aliases: []", "tags:",
-                                           "  - daily-notes", "---", ""}
+                    local final_content = {
+                        "---",
+                        string.format('id: "%s"', day),
+                        "aliases: []",
+                        "tags:",
+                        "  - daily-notes",
+                        "---",
+                        ""
+                    }
 
-                    -- テンプレートの内容を追加（フロントマターは除く）
                     for _, line in ipairs(template_lines) do
                         table.insert(final_content, line)
                     end
 
-                    vim.api.nvim_buf_set_lines(0, 0, -1, false, final_content)
+                    -- Treesitterの処理を待ってからバッファを設定
+                    vim.schedule(function()
+                        vim.api.nvim_buf_set_lines(0, 0, -1, false, final_content)
 
-                    -- Tasksセクションにカーソル移動
-                    for i, line in ipairs(final_content) do
-                        if line:match("^## Tasks") then
-                            vim.api.nvim_win_set_cursor(0, {i + 2, 4})
-                            break
+                        for i, line in ipairs(final_content) do
+                            if line:match("^## Tasks") then
+                                vim.api.nvim_win_set_cursor(0, {i + 2, 4})
+                                break
+                            end
                         end
-                    end
+                    end)
                 else
                     print("Template file not found: " .. template_path)
                 end
             end
         end
 
-        -- キーマップを独自関数に変更
-        vim.keymap.set('n', '<leader>jd', create_daily_note, {
-            desc = 'Create/Open today note'
-        })
-
-        -- 昨日・明日用の関数も作成
-        vim.keymap.set('n', '<leader>jy', function()
-            local yesterday = os.time() - 86400 -- 24時間前
-            local date = os.date("*t", yesterday)
-            local year = date.year
-            local month = string.format("%02d", date.month)
-            local day = string.format("%02d", date.day)
-            local file_path = string.format("daily/%d/%s/%s.md", year, month, day)
-            vim.cmd('edit ' .. file_path)
-        end, {
-            desc = 'Open yesterday note'
-        })
-
-        vim.keymap.set('n', '<leader>jt', function()
-            local tomorrow = os.time() + 86400 -- 24時間後
-            local date = os.date("*t", tomorrow)
-            local year = date.year
-            local month = string.format("%02d", date.month)
-            local day = string.format("%02d", date.day)
-            local file_path = string.format("daily/%d/%s/%s.md", year, month, day)
-            vim.cmd('edit ' .. file_path)
-        end, {
-            desc = 'Open tomorrow note'
-        })
-
-        -- キーマップ追加
-        vim.keymap.set('n', '<leader>nn', ':ObsidianNew ', {
-            desc = 'New note in inbox'
-        })
-
-        -- ウィークリーノート（既存のまま）
-        -- ウィークリーノート作成機能
+        -- ウィークリーノート作成機能（修正版）
         local function create_weekly_note()
             local current_date = os.date("*t")
             local year = current_date.year
@@ -356,23 +359,104 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
             end
 
             local week = get_iso_week()
-            local filename = string.format("weekly/%d/%02d.md", year, week)
+            local week_str = string.format("%02d", week)
+            local filename = string.format("weekly/%d/%s.md", year, week_str)
             local dir = string.format("weekly/%d", year)
 
             vim.fn.mkdir(dir, "p")
             vim.cmd('edit ' .. filename)
 
+            -- 新規ファイルの場合のみテンプレートを適用
             if vim.fn.filereadable(vim.fn.expand('%:p')) == 0 then
+                -- バッファが編集可能であることを確認
+                vim.opt_local.modifiable = true
+                
                 local template_path = vim.fn.expand('~/pkm/templates/weekly.md')
-                local template_content = vim.fn.readfile(template_path)
-                local title = string.format("# %d年%s月 第%02d週", year, month, week)
-                template_content[1] = title
-                vim.api.nvim_buf_set_lines(0, 0, -1, false, template_content)
+                
+                if vim.fn.filereadable(template_path) == 1 then
+                    local template_lines = vim.fn.readfile(template_path)
+                    
+                    -- 現在の日付を取得
+                    local day = string.format("%02d", current_date.day)
+                    local current_date_str = string.format("%d-%s-%s", year, month, day)
+                    
+                    -- フロントマター作成
+                    local final_content = {
+                        "---",
+                        string.format('id: "%s"', week_str),
+                        "aliases: []",
+                        "tags:",
+                        "  - weekly-notes",
+                        string.format('created: "%s"', current_date_str),
+                        string.format('updated: "%s"', current_date_str),
+                        string.format('published: "%s"', current_date_str),
+                        "draft: true",
+                        "---",
+                        ""
+                    }
+                    
+                    -- テンプレートの内容を追加（YYYY, MM, WWを置換）
+                    for _, line in ipairs(template_lines) do
+                        local processed_line = line
+                        processed_line = processed_line:gsub("YYYY", tostring(year))
+                        processed_line = processed_line:gsub("MM", month)
+                        processed_line = processed_line:gsub("WW", week_str)
+                        table.insert(final_content, processed_line)
+                    end
+                    
+                    -- Treesitterの処理を待ってからバッファを設定
+                    vim.schedule(function()
+                        vim.api.nvim_buf_set_lines(0, 0, -1, false, final_content)
+                        
+                        -- カーソルを最初のセクションに移動
+                        for i, line in ipairs(final_content) do
+                            if line:match("^## 前の週のアクション") then
+                                vim.api.nvim_win_set_cursor(0, {i + 2, 0})
+                                break
+                            end
+                        end
+                    end)
+                else
+                    print("Template file not found: " .. template_path)
+                end
             end
         end
 
+        -- キーマップ設定
+        vim.keymap.set('n', '<leader>jd', create_daily_note, {
+            desc = 'Create/Open today note'
+        })
+
+        vim.keymap.set('n', '<leader>jy', function()
+            local yesterday = os.time() - 86400
+            local date = os.date("*t", yesterday)
+            local year = date.year
+            local month = string.format("%02d", date.month)
+            local day = string.format("%02d", date.day)
+            local file_path = string.format("daily/%d/%s/%s.md", year, month, day)
+            vim.cmd('edit ' .. file_path)
+        end, {
+            desc = 'Open yesterday note'
+        })
+
+        vim.keymap.set('n', '<leader>jt', function()
+            local tomorrow = os.time() + 86400
+            local date = os.date("*t", tomorrow)
+            local year = date.year
+            local month = string.format("%02d", date.month)
+            local day = string.format("%02d", date.day)
+            local file_path = string.format("daily/%d/%s/%s.md", year, month, day)
+            vim.cmd('edit ' .. file_path)
+        end, {
+            desc = 'Open tomorrow note'
+        })
+
         vim.keymap.set('n', '<leader>jw', create_weekly_note, {
             desc = 'Create/Open weekly note'
+        })
+
+        vim.keymap.set('n', '<leader>nn', ':ObsidianNew ', {
+            desc = 'New note in inbox'
         })
     end
 }, -- 補完エンジン: nvim-cmp
