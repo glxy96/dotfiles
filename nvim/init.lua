@@ -128,23 +128,22 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
         })
     end
 }, -- ファイルアイコン
-{ 
-    "nvim-tree/nvim-web-devicons", lazy = true 
-},
-
-   -- ファイルエクスプローラー
+{
+    "nvim-tree/nvim-web-devicons",
+    lazy = true
+}, -- ファイルエクスプローラー
 {
     "nvim-tree/nvim-tree.lua",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
+    dependencies = {"nvim-tree/nvim-web-devicons"},
     config = function()
         require("nvim-tree").setup({
             -- ここで細かい設定が可能ですが、まずはデフォルトでOK
             view = {
-                width = 30, -- 幅を30文字に設定
-            },
+                width = 30 -- 幅を30文字に設定
+            }
         })
     end
-},-- Markdownプレビュー
+}, -- Markdownプレビュー
 {
     "previm/previm",
     ft = {"markdown"},
@@ -223,7 +222,7 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
         require("obsidian").setup({
             -- デバッグ用ログ設定（問題解決後はコメントアウト推奨）
             -- log_level = vim.log.levels.DEBUG,
-            
+
             completion = {
                 nvim_cmp = true,
                 min_chars = 2
@@ -238,40 +237,71 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
                 return title or "untitled"
             end,
             open_notes_in = "current",
-            
+
             -- フロントマターのカスタム処理
+            -- Obsidian.nvim フロントマター設定
+            -- PKM + Quartz公開ワークフロー対応版
+            -- 設計方針：
+            --   - 全てのメモに日付フィールド (created, updated, published) を記録
+            --   - public/weekly は初回作成時に draft: true を自動設定
+            --   - draft は既存値を保持（手動で false に変更して公開）
+
             note_frontmatter_func = function(note)
-                -- 基本フィールド
-                local out = { 
-                    id = note.id, 
-                    aliases = note.aliases, 
-                    tags = note.tags 
+                local out = {
+                    id = note.id,
+                    aliases = note.aliases,
+                    tags = note.tags
                 }
-                
-                -- 日付フィールドは自動更新（Obsidian.nvimのデフォルト動作）
+
+                -- ファイルパスを取得
+                local path = note.path and tostring(note.path) or ""
+
+                -- ディレクトリ判定
+                local is_public = path:match("^public/")
+                local is_weekly = path:match("^weekly/")
+
+                local current_date = os.date("%Y-%m-%d")
+
                 if note.metadata ~= nil and note.metadata.frontmatter ~= nil then
+                    -- 既存ファイルの場合
                     local fm = note.metadata.frontmatter
-                    
-                    -- draft と publish は既存の値を保持（変更しない）
+
+                    -- 日付フィールド（全メモに適用）
+                    out.created = fm.created or current_date
+                    out.updated = current_date -- 保存時に常に更新
+                    out.published = fm.published or current_date
+
+                    -- draftフィールドは既存値を保持（手動管理）
                     if fm.draft ~= nil then
                         out.draft = fm.draft
                     end
+
+                    -- publishフィールドも保持（Quartz ExplicitPublish用の場合）
                     if fm.publish ~= nil then
                         out.publish = fm.publish
                     end
-                    
-                    -- その他のカスタムフィールドも保持
-                    -- 必要に応じて追加
+
+                    -- その他のカスタムフィールドを保持
                     for key, value in pairs(fm) do
-                        if key ~= "id" and key ~= "aliases" and key ~= "tags" 
-                           and key ~= "created" and key ~= "modified" and key ~= "published" then
+                        if key ~= "id" and key ~= "aliases" and key ~= "tags" and key ~= "created" and key ~= "updated" and
+                            key ~= "published" and key ~= "draft" and key ~= "publish" then
                             out[key] = value
                         end
                     end
+                else
+                    -- 新規ファイルの場合
+                    out.created = current_date
+                    out.updated = current_date
+                    out.published = current_date
+
+                    -- 公開対象ディレクトリは初期値draft: true
+                    if is_public or is_weekly then
+                        out.draft = true
+                    end
                 end
-                
+
                 return out
-            end,
+            end
         })
 
         -- カスタムデイリーノート作成機能（既存のコードそのまま）
@@ -290,10 +320,10 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
             if vim.fn.filereadable(vim.fn.expand('%:p')) == 0 then
                 -- バッファが編集可能であることを確認
                 vim.opt_local.modifiable = true
-                
+
                 local target_date = string.format("%d-%s-%s", year, month, day)
                 local template_path = vim.fn.expand('~/pkm/templates/daily.md')
-                
+
                 if vim.fn.filereadable(template_path) == 1 then
                     local template_lines = vim.fn.readfile(template_path)
 
@@ -301,15 +331,8 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
                         template_lines[i] = line:gsub("YYYY%-MM%-DD", target_date)
                     end
 
-                    local final_content = {
-                        "---",
-                        string.format('id: "%s"', day),
-                        "aliases: []",
-                        "tags:",
-                        "  - daily-notes",
-                        "---",
-                        ""
-                    }
+                    local final_content = {"---", string.format('id: "%s"', day), "aliases: []", "tags:",
+                                           "  - daily-notes", "---", ""}
 
                     for _, line in ipairs(template_lines) do
                         table.insert(final_content, line)
@@ -370,31 +393,22 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
             if vim.fn.filereadable(vim.fn.expand('%:p')) == 0 then
                 -- バッファが編集可能であることを確認
                 vim.opt_local.modifiable = true
-                
+
                 local template_path = vim.fn.expand('~/pkm/templates/weekly.md')
-                
+
                 if vim.fn.filereadable(template_path) == 1 then
                     local template_lines = vim.fn.readfile(template_path)
-                    
+
                     -- 現在の日付を取得
                     local day = string.format("%02d", current_date.day)
                     local current_date_str = string.format("%d-%s-%s", year, month, day)
-                    
+
                     -- フロントマター作成
-                    local final_content = {
-                        "---",
-                        string.format('id: "%s"', week_str),
-                        "aliases: []",
-                        "tags:",
-                        "  - weekly-notes",
-                        string.format('created: "%s"', current_date_str),
-                        string.format('updated: "%s"', current_date_str),
-                        string.format('published: "%s"', current_date_str),
-                        "draft: true",
-                        "---",
-                        ""
-                    }
-                    
+                    local final_content = {"---", string.format('id: "%s"', week_str), "aliases: []", "tags:",
+                                           "  - weekly-notes", string.format('created: "%s"', current_date_str),
+                                           string.format('updated: "%s"', current_date_str),
+                                           string.format('published: "%s"', current_date_str), "draft: true", "---", ""}
+
                     -- テンプレートの内容を追加（YYYY, MM, WWを置換）
                     for _, line in ipairs(template_lines) do
                         local processed_line = line
@@ -403,11 +417,11 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
                         processed_line = processed_line:gsub("WW", week_str)
                         table.insert(final_content, processed_line)
                     end
-                    
+
                     -- Treesitterの処理を待ってからバッファを設定
                     vim.schedule(function()
                         vim.api.nvim_buf_set_lines(0, 0, -1, false, final_content)
-                        
+
                         -- カーソルを最初のセクションに移動
                         for i, line in ipairs(final_content) do
                             if line:match("^## 前の週のアクション") then
