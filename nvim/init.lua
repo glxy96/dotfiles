@@ -238,70 +238,48 @@ require("lazy").setup({ -- カラースキーム: Tokyo Night
             end,
             open_notes_in = "current",
 
-            -- フロントマターのカスタム処理
             -- Obsidian.nvim フロントマター設定
             -- PKM + Quartz公開ワークフロー対応版
             -- 設計方針：
             --   - 全てのメモに日付フィールド (created, updated, published) を記録
-            --   - public/weekly は初回作成時に draft: true を自動設定
-            --   - draft は既存値を保持（手動で false に変更して公開）
+            --   - public/weekly の新規作成時のみ draft: true を設定
+            --   - 以降、draftフィールドには一切触らない（手動管理）
 
             note_frontmatter_func = function(note)
-                local out = {
-                    id = note.id,
-                    aliases = note.aliases,
-                    tags = note.tags
+                local out = { 
+                    id = note.id, 
+                    aliases = note.aliases, 
+                    tags = note.tags 
                 }
-
-                -- ファイルパスを取得
-                local path = note.path and tostring(note.path) or ""
-
-                -- ディレクトリ判定
-                local is_public = path:match("^public/")
-                local is_weekly = path:match("^weekly/")
-
+                
                 local current_date = os.date("%Y-%m-%d")
-
-                if note.metadata ~= nil and note.metadata.frontmatter ~= nil then
-                    -- 既存ファイルの場合
-                    local fm = note.metadata.frontmatter
-
-                    -- 日付フィールド（全メモに適用）
-                    out.created = fm.created or current_date
-                    out.updated = current_date -- 保存時に常に更新
-                    out.published = fm.published or current_date
-
-                    -- draftフィールドは既存値を保持（手動管理）
-                    if fm.draft ~= nil then
-                        out.draft = fm.draft
+                local path = note.path and tostring(note.path) or ""
+                local is_public = path:match("/public/")
+                local is_weekly = path:match("/weekly/")
+                
+                if note.metadata ~= nil and not vim.tbl_isempty(note.metadata) then
+                    -- 既存ファイル: note.metadataを全てコピー
+                    for k, v in pairs(note.metadata) do
+                        out[k] = v
                     end
-
-                    -- publishフィールドも保持（Quartz ExplicitPublish用の場合）
-                    if fm.publish ~= nil then
-                        out.publish = fm.publish
-                    end
-
-                    -- その他のカスタムフィールドを保持
-                    for key, value in pairs(fm) do
-                        if key ~= "id" and key ~= "aliases" and key ~= "tags" and key ~= "created" and key ~= "updated" and
-                            key ~= "published" and key ~= "draft" and key ~= "publish" then
-                            out[key] = value
-                        end
-                    end
+                    -- 日付フィールドを更新
+                    out.created = out.created or current_date
+                    out.updated = current_date
+                    out.published = out.published or current_date
                 else
-                    -- 新規ファイルの場合
+                    -- 新規ファイル: 日付フィールドを設定
                     out.created = current_date
                     out.updated = current_date
                     out.published = current_date
-
-                    -- 公開対象ディレクトリは初期値draft: true
+                    
+                    -- 公開対象ディレクトリは初期値draft: true（新規時のみ）
                     if is_public or is_weekly then
                         out.draft = true
                     end
                 end
-
+                
                 return out
-            end
+            end,
         })
 
         -- カスタムデイリーノート作成機能（既存のコードそのまま）
