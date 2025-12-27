@@ -35,7 +35,7 @@ mkdir -p "$backup_dir"
 [ -f ~/.zshrc ] && cp ~/.zshrc "$backup_dir/"
 [ -f ~/.gitconfig ] && cp ~/.gitconfig "$backup_dir/"
 [ -f ~/.config/nvim/init.lua ] && cp ~/.config/nvim/init.lua "$backup_dir/"
-[ -f ~/.config/ghostty/config ] && cp ~/.config/ghostty/config "$backup_dir/"
+[ -d ~/.config/ghostty ] && cp -r ~/.config/ghostty "$backup_dir/"
 
 # 3. シンボリックリンク作成
 ln -sf ~/dotfiles/.zshrc ~/.zshrc
@@ -44,8 +44,7 @@ ln -sf ~/dotfiles/.gitconfig ~/.gitconfig
 ln -sf ~/dotfiles/.commit_template ~/.commit_template
 mkdir -p ~/.config/nvim
 ln -sf ~/dotfiles/nvim/init.lua ~/.config/nvim/init.lua
-mkdir -p ~/.config/ghostty
-ln -sf ~/dotfiles/ghostty/config ~/.config/ghostty/config
+ln -sf ~/dotfiles/ghostty ~/.config/ghostty
 ln -sf ~/dotfiles/ssh/config ~/.ssh/config
 
 # 4. 設定を反映
