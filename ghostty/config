@@ -1,0 +1,27 @@
+# フォント設定
+font-family = "HackGen Console NF"
+font-size = 17
+
+# テーマ設定
+theme = TokyoNight Storm
+
+# font
+font-thicken = true
+font-thicken-strength = 1
+
+# ウィンドウ設定
+window-padding-x = 2
+window-padding-y = 2
+background-opacity = 0.88
+
+# text color
+alpha-blending = linear
+
+# シェル統合
+shell-integration = zsh
+shell-integration-features = ssh-env,ssh-terminfo
+
+# その他
+confirm-close-surface = false
+copy-on-select = clipboard
+macos-titlebar-style = hidden
