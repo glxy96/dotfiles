@@ -6,7 +6,7 @@ glxy96の開発環境設定ファイル
 
 このリポジトリには以下の設定が含まれています：
 
-- **Zsh**: シェル環境設定（.zshrc, .zprofile）
+- **Zsh**: シェル環境設定（.zshrc, .zprofile, .zsh/）
 - **Git**: バージョン管理設定（.gitconfig, .commit_template）
 - **Neovim**: エディタ設定（init.lua）
 - **Ghostty**: ターミナルエミュレータ設定（config）
@@ -21,6 +21,9 @@ glxy96の開発環境設定ファイル
 - Neovim (>= 0.9.0)
 - ripgrep
 - Ghostty（任意）
+- HackGen Console NF フォント（Ghostty使用時に推奨）
+  - [HackGen](https://github.com/yuru7/HackGen/releases)からダウンロード＆インストール
+  - または Homebrew: `brew install --cask font-hackgen-nerd`
 
 ### インストール
 
@@ -33,6 +36,8 @@ cd ~/dotfiles
 backup_dir="$HOME/.dotfiles_backup_$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$backup_dir"
 [ -f ~/.zshrc ] && cp ~/.zshrc "$backup_dir/"
+[ -f ~/.zprofile ] && cp ~/.zprofile "$backup_dir/"
+[ -d ~/.zsh ] && cp -r ~/.zsh "$backup_dir/"
 [ -f ~/.gitconfig ] && cp ~/.gitconfig "$backup_dir/"
 [ -f ~/.config/nvim/init.lua ] && cp ~/.config/nvim/init.lua "$backup_dir/"
 [ -d ~/.config/ghostty ] && cp -r ~/.config/ghostty "$backup_dir/"
@@ -40,6 +45,7 @@ mkdir -p "$backup_dir"
 # 3. シンボリックリンク作成
 ln -sf ~/dotfiles/.zshrc ~/.zshrc
 ln -sf ~/dotfiles/.zprofile ~/.zprofile
+ln -sf ~/dotfiles/.zsh ~/.zsh
 ln -sf ~/dotfiles/.gitconfig ~/.gitconfig
 ln -sf ~/dotfiles/.commit_template ~/.commit_template
 mkdir -p ~/.config/nvim
