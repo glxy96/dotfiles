@@ -1,7 +1,9 @@
+Include /Users/ginga/.colima/ssh_config
+
 Host raspi
   HostName 192.168.50.200
-  User pi
-  Port 54321
+  User ginga 
+  Port 22 
   IdentityFile ~/.ssh/id_rsa
 
 Host ubuntu
