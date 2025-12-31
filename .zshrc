@@ -39,6 +39,11 @@ SAVEHIST=10000
 setopt correct
 
 # 補完
+
+if type brew &>/dev/null; then
+  FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
+fi
+
 autoload -Uz compinit && compinit
 
 # 小文字でも大文字ディレクトリ、ファイルを補完できるようにする
@@ -49,7 +54,7 @@ autoload -U colors && colors
 source ~/.zsh/git-prompt.sh
 setopt PROMPT_SUBST
 
-PROMPT='%F{green}%n%f@%m %F{cyan}%~%f'
+PROMPT='%F{yellow}[%*]%f %F{green}%n%f@%m %F{cyan}%~%f'
 PROMPT+='%{$fg[red]%}$(__git_ps1 "(%s)")%{$reset_color%} > '
 
 ### エイリアス
