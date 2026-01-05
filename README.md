@@ -10,7 +10,7 @@ glxy96の開発環境設定ファイル
 - **Git**: バージョン管理設定（.gitconfig, .commit_template）
 - **Neovim**: エディタ設定（init.lua）
 - **Ghostty**: ターミナルエミュレータ設定（config）
-- **SSH**: 接続設定（config）
+- **SSH**: 接続設定（config - マシン固有）
 
 ## セットアップ手順
 
@@ -26,7 +26,6 @@ glxy96の開発環境設定ファイル
   - または Homebrew: `brew install --cask font-hackgen-nerd`
 
 ### インストール
-
 ```bash
 # 1. リポジトリをクローン
 git clone git@github.com:glxy96/dotfiles.git ~/dotfiles
@@ -51,12 +50,52 @@ ln -sf ~/dotfiles/.commit_template ~/.commit_template
 mkdir -p ~/.config/nvim
 ln -sf ~/dotfiles/nvim/init.lua ~/.config/nvim/init.lua
 ln -sf ~/dotfiles/ghostty ~/.config/ghostty
-ln -sf ~/dotfiles/ssh/config ~/.ssh/config
 
-# 4. 設定を反映
+# 4. SSH config セットアップ（対話式）
+./setup_ssh.sh
+
+# 5. 設定を反映
 source ~/.zshrc
 nvim --headless "+Lazy! sync" +qa
 ```
+
+## SSH config について
+
+`ssh/config` はマシン固有のSSH鍵パスを含むため、Git管理から除外しています。
+
+### セットアップ方法
+
+対話式スクリプトで簡単にセットアップできます：
+```bash
+./setup_ssh.sh
+```
+
+スクリプトは以下を実行します：
+1. 利用可能なSSH鍵を表示
+2. GitHub用の鍵を選択（デフォルト値あり）
+3. `ssh/config.template` から `~/.ssh/config` を生成
+4. 適切な権限（600）を設定
+
+### 手動でセットアップする場合
+```bash
+# テンプレートから生成
+cp ssh/config.template ~/.ssh/config
+
+# GitHub鍵のパスを書き換え
+# {{GITHUB_SSH_KEY}} を実際の鍵パス（例: ~/.ssh/id_rsa_github_macmini）に置換
+vim ~/.ssh/config
+
+# 権限設定
+chmod 600 ~/.ssh/config
+
+# 動作確認
+ssh -T git@github.com
+```
+
+### 各マシンの鍵情報（参考）
+
+- **MacBook**: `~/.ssh/id_ed25519_github_glxy96`
+- **Mac mini**: `~/.ssh/id_rsa_github_macmini`
 
 ## 主な機能
 
@@ -68,31 +107,39 @@ nvim --headless "+Lazy! sync" +qa
 ### PKM機能（Obsidian連携）
 
 ノート管理機能を使用する場合は、以下のディレクトリを作成してください：
-
 ```bash
 mkdir -p ~/pkm/{daily,weekly,inbox/temporary,templates}
 ```
 
 ## トラブルシューティング
 
-### プラグインエラー
+### SSH接続エラー
+```bash
+# GitHub接続テスト
+ssh -T git@github.com
 
+# エラーが出る場合はSSH configを再セットアップ
+./setup_ssh.sh
+```
+
+### プラグインエラー
 ```bash
 nvim --headless "+Lazy! clean" +qa
 nvim --headless "+Lazy! sync" +qa
 ```
 
 ### 設定の復元
-
 ```bash
 cp ~/.dotfiles_backup_YYYYMMDD_HHMMSS/.zshrc ~/
 ```
 
 ## 更新
-
 ```bash
 cd ~/dotfiles
+git checkout -b <branch-name>
+# 変更を加える
 git add .
 git commit -m "📝 Update configuration"
-git push
+git push -u origin <branch-name>
+# GitHub上でPRを作成してマージ
 ```
