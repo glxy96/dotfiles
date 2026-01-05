@@ -12,21 +12,9 @@ Host ubuntu
   Port 54321
   IdentityFile ~/.ssh/ubuntu_home
 
-# Host ubuntu
-#   HostName ginga-verif.asuscomm.com
-#   User ginga
-#   Port 54321
-#   IdentityFile ~/.ssh/ubuntu_home
-
-# Ginga313のほうのやつ
-# Host github github.com
-#   HostName github.com
-#   IdentityFile ~/.ssh/id_rsa_git
-#   User git
-
 Host github github.com
   Hostname github.com
-  IdentityFile ~/.ssh/id_ed25519_github_glxy96
+  IdentityFile {{GITHUB_SSH_KEY}}
   User git
 
 Host rpizero01
