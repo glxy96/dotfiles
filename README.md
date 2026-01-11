@@ -6,32 +6,37 @@ glxy96の開発環境設定ファイル
 
 このリポジトリには以下の設定が含まれています：
 
+- **Homebrew**: パッケージ管理（Brewfile）
 - **Zsh**: シェル環境設定（.zshrc, .zprofile, .zsh/）
 - **Git**: バージョン管理設定（.gitconfig, .commit_template）
 - **Neovim**: エディタ設定（init.lua）
 - **Ghostty**: ターミナルエミュレータ設定（config）
+- **Karabiner-Elements**: キーボードカスタマイズ設定（karabiner/）
 - **SSH**: 接続設定（config - マシン固有）
 
 ## セットアップ手順
 
 ### 前提条件
 
-- Git
-- Zsh
-- Neovim (>= 0.9.0)
-- ripgrep
-- Ghostty（任意）
-- HackGen Console NF フォント（Ghostty使用時に推奨）
-  - [HackGen](https://github.com/yuru7/HackGen/releases)からダウンロード＆インストール
-  - または Homebrew: `brew install --cask font-hackgen-nerd`
+- **Homebrew**（必須）
+- **Git**
+- **Zsh**
+
+その他のツールはBrewfileで一括インストール可能です。
 
 ### インストール
 ```bash
-# 1. リポジトリをクローン
+# リポジトリをクローン
 git clone git@github.com:glxy96/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 
-# 2. 既存設定をバックアップ（任意）
+# パッケージとアプリケーションをインストール
+brew bundle
+
+# GitHub認証
+gh auth login
+
+# 既存設定をバックアップ（任意）
 backup_dir="$HOME/.dotfiles_backup_$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$backup_dir"
 [ -f ~/.zshrc ] && cp ~/.zshrc "$backup_dir/"
@@ -40,8 +45,9 @@ mkdir -p "$backup_dir"
 [ -f ~/.gitconfig ] && cp ~/.gitconfig "$backup_dir/"
 [ -f ~/.config/nvim/init.lua ] && cp ~/.config/nvim/init.lua "$backup_dir/"
 [ -d ~/.config/ghostty ] && cp -r ~/.config/ghostty "$backup_dir/"
+[ -d ~/.config/karabiner ] && cp -r ~/.config/karabiner "$backup_dir/"
 
-# 3. シンボリックリンク作成
+# シンボリックリンク作成
 ln -sf ~/dotfiles/.zshrc ~/.zshrc
 ln -sf ~/dotfiles/.zprofile ~/.zprofile
 ln -sf ~/dotfiles/.zsh ~/.zsh
@@ -50,14 +56,40 @@ ln -sf ~/dotfiles/.commit_template ~/.commit_template
 mkdir -p ~/.config/nvim
 ln -sf ~/dotfiles/nvim/init.lua ~/.config/nvim/init.lua
 ln -sf ~/dotfiles/ghostty ~/.config/ghostty
+ln -sf ~/dotfiles/karabiner ~/.config/karabiner
 
-# 4. SSH config セットアップ（対話式）
+# SSH config セットアップ
 ./setup_ssh.sh
 
-# 5. 設定を反映
+# 設定を反映
 source ~/.zshrc
 nvim --headless "+Lazy! sync" +qa
 ```
+
+## Brewfile について
+
+`Brewfile` は開発環境に必要なパッケージとアプリケーションを定義したファイルです。
+
+### 使い方
+
+```bash
+# パッケージを一括インストール
+cd ~/dotfiles
+brew bundle
+
+# Brewfileを更新
+brew bundle dump --force
+```
+
+### 含まれるパッケージ
+
+- **開発ツール**: Git, Neovim, ripgrep, fd, fzf など
+- **言語環境**: pyenv (Python), fnm (Node.js)
+- **インフラツール**: AWS CLI, Docker, Terraform
+- **GUIアプリ**: Ghostty, Chrome, Obsidian, Raycast, Karabiner-Elements など
+- **Mac App Store**: Magnet, LINE, Logic Pro など
+
+詳細は `Brewfile` を参照してください。
 
 ## SSH config について
 
@@ -65,30 +97,38 @@ nvim --headless "+Lazy! sync" +qa
 
 ### セットアップ方法
 
-対話式スクリプトで簡単にセットアップできます：
+#### 1. GitHub CLIで認証（初回のみ）
+
+```bash
+gh auth login
+```
+
+選択項目：
+- **Where do you use GitHub?** → `GitHub.com`
+- **What is your preferred protocol?** → `SSH`
+- **Upload your SSH public key?** → 既存の鍵を選択、または`Yes`で新規作成
+- **Title for your SSH key** → マシン名など（例: `macbook-air`）
+- **How would you like to authenticate?** → `Login with a web browser`
+
+#### 2. SSH config を生成
+
 ```bash
 ./setup_ssh.sh
 ```
 
-スクリプトは以下を実行します：
-1. 利用可能なSSH鍵を表示
-2. GitHub用の鍵を選択（デフォルト値あり）
-3. `ssh/config.template` から `~/.ssh/config` を生成
-4. 適切な権限（600）を設定
+利用可能なSSH鍵から選択し、`~/.ssh/config`を生成します。
+
+#### 3. 動作確認
+
+```bash
+ssh -T git@github.com
+```
 
 ### 手動でセットアップする場合
 ```bash
-# テンプレートから生成
 cp ssh/config.template ~/.ssh/config
-
-# GitHub鍵のパスを書き換え
-# {{GITHUB_SSH_KEY}} を実際の鍵パス（例: ~/.ssh/id_rsa_github_macmini）に置換
-vim ~/.ssh/config
-
-# 権限設定
+vim ~/.ssh/config  # {{GITHUB_SSH_KEY}} を実際の鍵パスに置換
 chmod 600 ~/.ssh/config
-
-# 動作確認
 ssh -T git@github.com
 ```
 
@@ -99,10 +139,12 @@ ssh -T git@github.com
 
 ## 主な機能
 
+- **Homebrew**: 開発ツール、言語環境、GUIアプリの一括管理
 - **Zsh**: プラグイン管理、補完、Git統合
 - **Neovim**: Markdown編集、ファイル検索、PKM機能
 - **Git**: コミットテンプレート、エディタ連携
 - **Ghostty**: テーマ設定、フォント設定
+- **Karabiner-Elements**: Command/Optionキーで日本語入力切り替え、RDP用キーマッピング
 
 ### PKM機能（Obsidian連携）
 
@@ -115,10 +157,7 @@ mkdir -p ~/pkm/{daily,weekly,inbox/temporary,templates}
 
 ### SSH接続エラー
 ```bash
-# GitHub接続テスト
 ssh -T git@github.com
-
-# エラーが出る場合はSSH configを再セットアップ
 ./setup_ssh.sh
 ```
 
@@ -137,9 +176,7 @@ cp ~/.dotfiles_backup_YYYYMMDD_HHMMSS/.zshrc ~/
 ```bash
 cd ~/dotfiles
 git checkout -b <branch-name>
-# 変更を加える
 git add .
 git commit -m "📝 Update configuration"
 git push -u origin <branch-name>
-# GitHub上でPRを作成してマージ
 ```

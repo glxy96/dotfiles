@@ -10,8 +10,9 @@ Personal dotfiles repository for macOS development environment synchronization a
 
 ```
 dotfiles/
+├── Brewfile            # Homebrew package/app bundle definition
 ├── .zshrc              # Zsh configuration (plugins, prompt, aliases)
-├── .zprofile           # PATH settings (Homebrew, Java, pyenv, etc.)
+├── .zprofile           # PATH settings (Homebrew, Claude Code, pyenv, etc.)
 ├── .zsh/               # Zsh-related scripts
 │   └── git-prompt.sh   # Git prompt display script (from Git official repo)
 ├── .gitconfig          # Git configuration
@@ -20,6 +21,9 @@ dotfiles/
 │   └── init.lua        # Neovim configuration (lazy.nvim, Telescope, Treesitter)
 ├── ghostty/
 │   └── config          # Ghostty terminal emulator settings
+├── karabiner/          # Karabiner-Elements keyboard customization
+│   ├── karabiner.json  # Main configuration
+│   └── assets/complex_modifications/  # Custom key mappings
 └── ssh/
     └── config          # SSH connection settings
 ```
@@ -31,6 +35,7 @@ This repository uses a specific symlink strategy to avoid circular link issues:
 **Link entire directories:**
 - `.zsh/` → `~/.zsh` (contains git-prompt.sh required by .zshrc)
 - `ghostty/` → `~/.config/ghostty` (prevents circular link if directory exists first)
+- `karabiner/` → `~/.config/karabiner` (entire keyboard config directory)
 
 **Link specific files only:**
 - `nvim/init.lua` → `~/.config/nvim/init.lua` (other nvim files may be added in future)
@@ -73,9 +78,9 @@ This repository uses emoji prefixes in commit messages (see .commit_template). C
 When modifying configuration files, consider:
 
 1. **External dependencies not in repo:**
-   - HackGen Console NF font (used by Ghostty)
+   - Homebrew (required to install packages from Brewfile)
    - Zinit (auto-installed on first .zshrc source)
-   - Language version managers (pyenv, fnm, ghcup)
+   - Language version managers (pyenv, fnm) - installed via Brewfile
 
 2. **Machine-specific settings:**
    - `ssh/config`: Contains `Include /Users/ginga/.colima/ssh_config` (may not exist on all machines)
@@ -91,7 +96,17 @@ When modifying configuration files, consider:
 ### Zsh Setup
 - Uses Zinit for plugin management (auto-installs to `~/.local/share/zinit/`)
 - Git prompt integration via `.zsh/git-prompt.sh`
-- PATH configuration in `.zprofile` for Homebrew, Java, pyenv, SuperCollider
+- PATH configuration in `.zprofile` for Homebrew, Claude Code, pyenv, fnm
+
+### Homebrew Setup
+- `Brewfile` defines all packages and applications to install
+- Use `brew bundle` to install all dependencies from Brewfile
+- Use `brew bundle dump --force` to update Brewfile with currently installed packages
+
+### Karabiner-Elements Setup
+- Custom key mappings for Japanese input switching (Command keys → Eisuu/Kana)
+- RDP-specific key remapping (Command ↔ Option swap for Windows compatibility)
+- Complex modifications stored in `karabiner/assets/complex_modifications/`
 
 ### Neovim Setup
 - Uses lazy.nvim package manager (auto-bootstraps on first run)
