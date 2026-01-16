@@ -110,9 +110,6 @@ cask "blu-ray-player"
 # フォント
 cask "font-hackgen-nerd"
 
-# 音楽制作
-cask "native-access"
-
 # コミュニケーション
 cask "discord"
 cask "slack"
@@ -137,10 +134,6 @@ mas "RunCat", id: 1429033973
 
 # コミュニケーション
 mas "LINE", id: 539883307
-
-# クリエイティブ
-mas "Logic Pro", id: 634148309
-mas "MainStage", id: 634159523
 
 # リモート
 mas "Windows App", id: 1295203466
