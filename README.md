@@ -6,7 +6,7 @@ glxy96の開発環境設定ファイル
 
 このリポジトリには以下の設定が含まれています：
 
-- **Homebrew**: パッケージ管理（Brewfile）
+- **Homebrew**: パッケージ管理（Brewfile, Brewfile.music）
 - **Zsh**: シェル環境設定（.zshrc, .zprofile, .zsh/）
 - **Git**: バージョン管理設定（.gitconfig, .commit_template）
 - **Neovim**: エディタ設定（init.lua）
@@ -77,6 +77,9 @@ nvim --headless "+Lazy! sync" +qa
 cd ~/dotfiles
 brew bundle
 
+# 音楽制作環境も追加でインストール
+brew bundle --file=Brewfile.music
+
 # Brewfileを更新
 brew bundle dump --force
 ```
@@ -87,9 +90,9 @@ brew bundle dump --force
 - **言語環境**: pyenv (Python), fnm (Node.js)
 - **インフラツール**: AWS CLI, Docker, Terraform
 - **GUIアプリ**: Ghostty, Chrome, Obsidian, Raycast, Karabiner-Elements など
-- **Mac App Store**: Magnet, LINE, Logic Pro など
+- **Mac App Store**: Magnet, LINE など
 
-詳細は `Brewfile` を参照してください。
+音楽制作環境は `Brewfile.music` を参照してください。
 
 ## SSH config について
 

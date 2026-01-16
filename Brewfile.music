@@ -1,0 +1,19 @@
+# ============================================
+# 音楽制作環境
+# ============================================
+
+# プラグイン管理ツール
+cask "ilok-license-manager"
+cask "native-access"
+cask "ik-product-manager"
+cask "izotope-product-portal"
+cask "waves-central"
+cask "spitfire-audio"
+
+# ============================================
+# Mac App Store
+# ============================================
+
+# DAW
+mas "Logic Pro", id: 634148309
+mas "MainStage", id: 634159523

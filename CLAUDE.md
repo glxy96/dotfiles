@@ -10,7 +10,8 @@ Personal dotfiles repository for macOS development environment synchronization a
 
 ```
 dotfiles/
-├── Brewfile            # Homebrew package/app bundle definition
+├── Brewfile            # Homebrew package/app bundle definition (common)
+├── Brewfile.music      # Music production environment (optional)
 ├── .zshrc              # Zsh configuration (plugins, prompt, aliases)
 ├── .zprofile           # PATH settings (Homebrew, Claude Code, pyenv, etc.)
 ├── .zsh/               # Zsh-related scripts
