@@ -26,7 +26,9 @@ dotfiles/
 │   ├── karabiner.json  # Main configuration
 │   └── assets/complex_modifications/  # Custom key mappings
 └── ssh/
-    └── config          # SSH connection settings
+    ├── config.template # GitHub SSH config template
+    └── config.d/       # Additional host configurations
+        └── home.conf   # Home network hosts (raspi, ubuntu, etc.)
 ```
 
 ## Symlink Strategy
