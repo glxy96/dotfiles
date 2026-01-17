@@ -113,32 +113,31 @@ gh auth login
 - **Title for your SSH key** → マシン名など（例: `macbook-air`）
 - **How would you like to authenticate?** → `Login with a web browser`
 
-#### 2. SSH config を生成
+#### 2. SSH config を生成（GitHub用）
 
 ```bash
 ./setup_ssh.sh
 ```
 
-利用可能なSSH鍵から選択し、`~/.ssh/config`を生成します。
+#### 3. 追加ホストの設定（任意）
 
-#### 3. 動作確認
+自宅サーバー等への接続が必要な場合：
+
+```bash
+# 秘密鍵を別マシンからコピー（AirDrop等）
+# 必要なホスト設定を追記
+cat ssh/config.d/home.conf >> ~/.ssh/config
+```
+
+`ssh/config.d/`には以下のファイルがあります：
+- `home.conf` - 自宅ネットワーク（raspi, ubuntu等）
+
+#### 4. 動作確認
 
 ```bash
 ssh -T git@github.com
+ssh raspi  # 追加ホストを設定した場合
 ```
-
-### 手動でセットアップする場合
-```bash
-cp ssh/config.template ~/.ssh/config
-vim ~/.ssh/config  # {{GITHUB_SSH_KEY}} を実際の鍵パスに置換
-chmod 600 ~/.ssh/config
-ssh -T git@github.com
-```
-
-### 各マシンの鍵情報（参考）
-
-- **MacBook**: `~/.ssh/id_ed25519_github_glxy96`
-- **Mac mini**: `~/.ssh/id_rsa_github_macmini`
 
 ## 主な機能
 
