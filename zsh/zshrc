@@ -51,7 +51,7 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 
 ### プロンプト設定
 autoload -U colors && colors
-source ~/.zsh/git-prompt.sh
+source ~/dotfiles/zsh/git-prompt.sh
 setopt PROMPT_SUBST
 
 PROMPT='%F{yellow}[%*]%f %F{green}%n%f@%m %F{cyan}%~%f'

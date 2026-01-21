@@ -6,13 +6,13 @@ glxy96の開発環境設定ファイル
 
 このリポジトリには以下の設定が含まれています：
 
-- **Homebrew**: パッケージ管理（Brewfile, Brewfile.music）
-- **Zsh**: シェル環境設定（.zshrc, .zprofile, .zsh/）
-- **Git**: バージョン管理設定（.gitconfig, .commit_template）
-- **Neovim**: エディタ設定（init.lua）
-- **Ghostty**: ターミナルエミュレータ設定（config）
+- **Homebrew**: パッケージ管理（brew/）
+- **Zsh**: シェル環境設定（zsh/）
+- **Git**: バージョン管理設定（git/）
+- **Neovim**: エディタ設定（nvim/）
+- **Ghostty**: ターミナルエミュレータ設定（ghostty/）
 - **Karabiner-Elements**: キーボードカスタマイズ設定（karabiner/）
-- **SSH**: 接続設定（config - マシン固有）
+- **SSH**: 接続設定（ssh/）
 
 ## セットアップ手順
 
@@ -31,7 +31,7 @@ git clone git@github.com:glxy96/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 
 # パッケージとアプリケーションをインストール
-brew bundle
+brew bundle --file=brew/Brewfile
 
 # GitHub認証
 gh auth login
@@ -41,25 +41,23 @@ backup_dir="$HOME/.dotfiles_backup_$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$backup_dir"
 [ -f ~/.zshrc ] && cp ~/.zshrc "$backup_dir/"
 [ -f ~/.zprofile ] && cp ~/.zprofile "$backup_dir/"
-[ -d ~/.zsh ] && cp -r ~/.zsh "$backup_dir/"
 [ -f ~/.gitconfig ] && cp ~/.gitconfig "$backup_dir/"
 [ -f ~/.config/nvim/init.lua ] && cp ~/.config/nvim/init.lua "$backup_dir/"
 [ -d ~/.config/ghostty ] && cp -r ~/.config/ghostty "$backup_dir/"
 [ -d ~/.config/karabiner ] && cp -r ~/.config/karabiner "$backup_dir/"
 
 # シンボリックリンク作成
-ln -sf ~/dotfiles/.zshrc ~/.zshrc
-ln -sf ~/dotfiles/.zprofile ~/.zprofile
-ln -sf ~/dotfiles/.zsh ~/.zsh
-ln -sf ~/dotfiles/.gitconfig ~/.gitconfig
-ln -sf ~/dotfiles/.commit_template ~/.commit_template
+ln -sf ~/dotfiles/zsh/zshrc ~/.zshrc
+ln -sf ~/dotfiles/zsh/zprofile ~/.zprofile
+ln -sf ~/dotfiles/git/config ~/.gitconfig
+ln -sf ~/dotfiles/git/commit_template ~/.commit_template
 mkdir -p ~/.config/nvim
 ln -sf ~/dotfiles/nvim/init.lua ~/.config/nvim/init.lua
 ln -sf ~/dotfiles/ghostty ~/.config/ghostty
 ln -sf ~/dotfiles/karabiner ~/.config/karabiner
 
 # SSH config セットアップ
-./setup_ssh.sh
+./scripts/setup_ssh.sh
 
 # 設定を反映
 source ~/.zshrc
@@ -68,20 +66,18 @@ nvim --headless "+Lazy! sync" +qa
 
 ## Brewfile について
 
-`Brewfile` は開発環境に必要なパッケージとアプリケーションを定義したファイルです。
+`brew/Brewfile` は開発環境に必要なパッケージとアプリケーションを定義したファイルです。
 
 ### 使い方
 
 ```bash
-# パッケージを一括インストール
 cd ~/dotfiles
-brew bundle
+
+# パッケージを一括インストール
+brew bundle --file=brew/Brewfile
 
 # 音楽制作環境も追加でインストール
-brew bundle --file=Brewfile.music
-
-# Brewfileを更新
-brew bundle dump --force
+brew bundle --file=brew/Brewfile.music
 ```
 
 ### 含まれるパッケージ
@@ -92,7 +88,7 @@ brew bundle dump --force
 - **GUIアプリ**: Ghostty, Chrome, Obsidian, Raycast, Karabiner-Elements など
 - **Mac App Store**: Magnet, LINE など
 
-音楽制作環境は `Brewfile.music` を参照してください。
+音楽制作環境は `brew/Brewfile.music` を参照してください。
 
 ## SSH config について
 
@@ -116,7 +112,7 @@ gh auth login
 #### 2. SSH config を生成（GitHub用）
 
 ```bash
-./setup_ssh.sh
+./scripts/setup_ssh.sh
 ```
 
 #### 3. 追加ホストの設定（任意）
@@ -160,7 +156,7 @@ mkdir -p ~/pkm/{daily,weekly,inbox/temporary,templates}
 ### SSH接続エラー
 ```bash
 ssh -T git@github.com
-./setup_ssh.sh
+./scripts/setup_ssh.sh
 ```
 
 ### プラグインエラー
