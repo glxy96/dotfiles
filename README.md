@@ -13,6 +13,7 @@ glxy96の開発環境設定ファイル
 - **Ghostty**: ターミナルエミュレータ設定（ghostty/）
 - **Karabiner-Elements**: キーボードカスタマイズ設定（karabiner/）
 - **SSH**: 接続設定（ssh/）
+- **Claude Code**: AIアシスタント設定（claude/）
 
 ## セットアップ手順
 
@@ -45,6 +46,8 @@ mkdir -p "$backup_dir"
 [ -f ~/.config/nvim/init.lua ] && cp ~/.config/nvim/init.lua "$backup_dir/"
 [ -d ~/.config/ghostty ] && cp -r ~/.config/ghostty "$backup_dir/"
 [ -d ~/.config/karabiner ] && cp -r ~/.config/karabiner "$backup_dir/"
+[ -f ~/.claude/settings.json ] && cp ~/.claude/settings.json "$backup_dir/"
+[ -f ~/.claude/CLAUDE.md ] && cp ~/.claude/CLAUDE.md "$backup_dir/"
 
 # シンボリックリンク作成
 ln -sf ~/dotfiles/zsh/zshrc ~/.zshrc
@@ -55,6 +58,12 @@ mkdir -p ~/.config/nvim
 ln -sf ~/dotfiles/nvim/init.lua ~/.config/nvim/init.lua
 ln -sf ~/dotfiles/ghostty ~/.config/ghostty
 ln -sf ~/dotfiles/karabiner ~/.config/karabiner
+mkdir -p ~/.claude
+ln -sf ~/dotfiles/claude/settings.json ~/.claude/settings.json
+ln -sf ~/dotfiles/claude/CLAUDE.md ~/.claude/CLAUDE.md
+
+# スクリプトに実行権限を付与
+chmod +x scripts/*.sh
 
 # SSH config セットアップ
 ./scripts/setup_ssh.sh
@@ -143,6 +152,7 @@ ssh raspi  # 追加ホストを設定した場合
 - **Git**: コミットテンプレート、エディタ連携
 - **Ghostty**: テーマ設定、フォント設定
 - **Karabiner-Elements**: Command/Optionキーで日本語入力切り替え、RDP用キーマッピング
+- **Claude Code**: デフォルトモデル、Gitワークフロー、コーディング指針
 
 ### PKM機能（Obsidian連携）
 
