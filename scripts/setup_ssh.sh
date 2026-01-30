@@ -4,7 +4,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-TEMPLATE_FILE="$SCRIPT_DIR/ssh/config.template"
+TEMPLATE_FILE="$(dirname "$SCRIPT_DIR")/ssh/config.template"
 OUTPUT_FILE="$HOME/.ssh/config"
 
 echo "🔑 SSH config セットアップ"
