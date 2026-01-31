@@ -58,7 +58,13 @@ PROMPT='%F{yellow}[%*]%f %F{green}%n%f@%m %F{cyan}%~%f'
 PROMPT+='%{$fg[red]%}$(__git_ps1 "(%s)")%{$reset_color%} > '
 
 ### エイリアス
-alias ls="gls --color=auto"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  # macOS の場合は GNU ls (gls) を使用
+  alias ls="gls --color=auto"
+else
+  # Linux (WSL) の場合は標準の ls を使用
+  alias ls="ls --color=auto"
+fi
 alias wol='wakeonlan'
 
 ### Zinitプラグイン
@@ -71,8 +77,13 @@ zinit load zsh-users/zsh-completions
 zinit ice wait'!0'; zinit load zdharma/history-search-multi-word
 zinit ice wait'!0'; zinit load zsh-users/zsh-history-substring-search
 
-# nodeバージョン管理(fnm)
-eval "$(fnm env --use-on-cd)"
+# fnm
+if command -v fnm &>/dev/null; then
+  eval "$(fnm env --use-on-cd)"
+elif [ -d "$HOME/.local/share/fnm" ]; then
+  export PATH="$HOME/.local/share/fnm:$PATH"
+  eval "$(fnm env --use-on-cd)"
+fi
 
 # シンタックスハイライト（最後に配置）
 zinit ice wait'!0'; zinit light zsh-users/zsh-syntax-highlighting
