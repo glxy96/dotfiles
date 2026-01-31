@@ -180,6 +180,49 @@ nvim --headless "+Lazy! sync" +qa
 cp ~/.dotfiles_backup_YYYYMMDD_HHMMSS/.zshrc ~/
 ```
 
+## WSL固有の設定
+
+### CUDA環境の構築（GPU利用時）
+
+WSL2でNVIDIA GPUを使用する場合、以下の手順でCUDA Toolkitをセットアップします。
+WSL2ではWindowsのNVIDIAドライバを共有するため、WSL内にはToolkitのみをインストールします。
+
+#### 1. CUDA Toolkit 12.6のインストール
+
+```bash
+# リポジトリキーの登録
+wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-keyring_1.1-1_all.deb
+sudo dpkg -i cuda-keyring_1.1-1_all.deb
+sudo apt-get update
+
+# Toolkitのインストール
+sudo apt-get -y install cuda-toolkit-12-6
+```
+
+#### 2. パスの設定
+
+`~/.zprofile` に以下を追記：
+
+```bash
+# WSL2 CUDA settings
+export PATH="/usr/local/cuda-12.6/bin:$PATH"
+export PATH="/usr/lib/wsl/lib:$PATH"
+export LD_LIBRARY_PATH="/usr/local/cuda-12.6/lib64:$LD_LIBRARY_PATH"
+```
+
+設定を反映：
+
+```bash
+source ~/.zprofile
+```
+
+#### 3. 動作確認
+
+```bash
+nvidia-smi
+nvcc --version
+```
+
 ## 更新
 ```bash
 cd ~/dotfiles
