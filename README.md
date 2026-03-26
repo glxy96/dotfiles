@@ -58,9 +58,10 @@ mkdir -p ~/.config/nvim
 ln -sf ~/dotfiles/nvim/init.lua ~/.config/nvim/init.lua
 ln -sf ~/dotfiles/ghostty ~/.config/ghostty
 ln -sf ~/dotfiles/karabiner ~/.config/karabiner
-mkdir -p ~/.claude
+mkdir -p ~/.claude/skills
 ln -sf ~/dotfiles/claude/settings.json ~/.claude/settings.json
 ln -sf ~/dotfiles/claude/CLAUDE.md ~/.claude/CLAUDE.md
+ln -sf ~/dotfiles/claude/skills/branch-clean ~/.claude/skills/branch-clean
 
 # スクリプトに実行権限を付与
 chmod +x scripts/*.sh
