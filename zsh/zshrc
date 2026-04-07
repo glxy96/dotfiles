@@ -66,6 +66,7 @@ else
   alias ls="ls --color=auto"
 fi
 alias wol='wakeonlan'
+alias beet='~/repos/beets/.venv/bin/beet'
 
 ### Zinitプラグイン
 
