@@ -12,12 +12,19 @@ autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 
 ### 環境変数・PATH設定
+# Obsidian vaults
+export AI_VAULT_ROOT="$HOME/AI_Vault"
+export PKM_VAULT_ROOT="$HOME/pkm"
+
 # pyenv
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init -)"
 fi
+
+# HuggingFaceのTOKEN(Read Only)をキーチェーンアクセスから読み出す
+export HF_TOKEN=$(security find-generic-password -a "$USER" -s "HF_TOKEN" -w 2>/dev/null)
 
 # ghcup (Haskell)
 [ -f "$HOME/.ghcup/env" ] && . "$HOME/.ghcup/env"
@@ -67,6 +74,8 @@ else
 fi
 alias wol='wakeonlan'
 alias beet='~/repos/beets/.venv/bin/beet'
+alias beetv='BEETSDIR=~/.config/beets-voice ~/repos/beets/.venv/bin/beet'
+alias mlx_whisper='~/repos/mlx-whisper/.venv/bin/mlx_whisper'
 
 ### Zinitプラグイン
 
