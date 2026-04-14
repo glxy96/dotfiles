@@ -12,6 +12,10 @@ autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 
 ### 環境変数・PATH設定
+# Obsidian vaults
+export AI_VAULT_ROOT="$HOME/AI_Vault"
+export PKM_VAULT_ROOT="$HOME/pkm"
+
 # pyenv
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
@@ -67,6 +71,7 @@ else
 fi
 alias wol='wakeonlan'
 alias beet='~/repos/beets/.venv/bin/beet'
+alias beetv='BEETSDIR=~/.config/beets-voice ~/repos/beets/.venv/bin/beet'
 
 ### Zinitプラグイン
 
