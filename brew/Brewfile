@@ -8,6 +8,7 @@ tap "imxieyi/waifu2x"
 
 brew "git"
 brew "neovim"
+brew "tmux"
 brew "zsh"
 
 # 検索・ファイル操作（Neovim依存）

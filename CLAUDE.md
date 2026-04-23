@@ -24,6 +24,8 @@ dotfiles/
 │   └── init.lua        # Neovim configuration (lazy.nvim, Telescope, Treesitter)
 ├── ghostty/
 │   └── config          # Ghostty terminal emulator settings
+├── tmux/
+│   └── tmux.conf       # tmux configuration (nvim-friendly, minimal)
 ├── karabiner/          # Karabiner-Elements keyboard customization
 │   ├── karabiner.json  # Main configuration
 │   └── assets/complex_modifications/  # Custom key mappings
@@ -55,6 +57,7 @@ This repository uses a specific symlink strategy to avoid circular link issues:
 - `git/config` → `~/.gitconfig`
 - `git/commit_template` → `~/.commit_template`
 - `nvim/init.lua` → `~/.config/nvim/init.lua`
+- `tmux/tmux.conf` → `~/.tmux.conf`
 - `claude/settings.json` → `~/.claude/settings.json`
 - `claude/CLAUDE.md` → `~/.claude/CLAUDE.md`
 - `claude/skills/branch-clean/` → `~/.claude/skills/branch-clean/`
