@@ -23,8 +23,13 @@ if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init -)"
 fi
 
-# HuggingFaceのTOKEN(Read Only)をキーチェーンアクセスから読み出す
-export HF_TOKEN=$(security find-generic-password -a "$USER" -s "HF_TOKEN" -w 2>/dev/null)
+# HuggingFaceのTOKEN(Read Only)をキーチェーンから遅延読み出し
+# シェル起動毎にsecurityコマンドを呼ぶとキーチェーン許可ポップアップが出るため、
+# 必要時に `hf-token` を実行してエクスポートする
+hf-token() {
+  export HF_TOKEN=$(security find-generic-password -a "$USER" -s "HF_TOKEN" -w 2>/dev/null)
+  [ -n "$HF_TOKEN" ] && echo "HF_TOKEN exported" || echo "HF_TOKEN not found in keychain" >&2
+}
 
 # ghcup (Haskell)
 [ -f "$HOME/.ghcup/env" ] && . "$HOME/.ghcup/env"
