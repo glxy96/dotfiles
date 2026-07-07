@@ -10,6 +10,7 @@ glxy96の開発環境設定ファイル
 - **Zsh**: シェル環境設定（zsh/）
 - **Git**: バージョン管理設定（git/）
 - **Neovim**: エディタ設定（nvim/）
+- **Zed**: エディタ設定（zed/）
 - **Ghostty**: ターミナルエミュレータ設定（ghostty/）
 - **Karabiner-Elements**: キーボードカスタマイズ設定（karabiner/）
 - **SSH**: 接続設定（ssh/）
@@ -62,6 +63,8 @@ mkdir -p ~/.claude/skills
 ln -sf ~/dotfiles/claude/settings.json ~/.claude/settings.json
 ln -sf ~/dotfiles/claude/CLAUDE.md ~/.claude/CLAUDE.md
 ln -sf ~/dotfiles/claude/skills/branch-clean ~/.claude/skills/branch-clean
+mkdir -p ~/.config/zed
+ln -sf ~/dotfiles/zed/settings.json ~/.config/zed/settings.json
 
 # スクリプトに実行権限を付与
 chmod +x scripts/*.sh
@@ -152,6 +155,7 @@ ssh raspi  # 追加ホストを設定した場合
 - **Neovim**: Markdown編集、ファイル検索、PKM機能
 - **Git**: コミットテンプレート、エディタ連携
 - **Ghostty**: テーマ設定、フォント設定
+- **Zed**: エディタ設定、ローカルLLM（OpenAI互換API）連携
 - **Karabiner-Elements**: Command/Optionキーで日本語入力切り替え、RDP用キーマッピング
 - **Claude Code**: デフォルトモデル、Gitワークフロー、コーディング指針
 

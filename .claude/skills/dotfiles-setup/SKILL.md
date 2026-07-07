@@ -25,6 +25,7 @@ dotfilesリポジトリのシンボリックリンクと実行権限を設定す
 ```
 ~/.config/nvim
 ~/.claude/skills
+~/.config/zed
 ```
 
 ### 3. シンボリックリンクの作成・更新
@@ -42,6 +43,7 @@ dotfilesリポジトリのシンボリックリンクと実行権限を設定す
 | `~/dotfiles/nvim/init.lua` | `~/.config/nvim/init.lua` |
 | `~/dotfiles/claude/settings.json` | `~/.claude/settings.json` |
 | `~/dotfiles/claude/CLAUDE.md` | `~/.claude/CLAUDE.md` |
+| `~/dotfiles/zed/settings.json` | `~/.config/zed/settings.json` |
 
 **ディレクトリ単位でリンク（循環リンク防止のため、先にターゲットを削除してはいけない）:**
 
