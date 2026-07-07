@@ -86,6 +86,9 @@ brew "imxieyi/waifu2x/waifu2x"
 # ターミナル
 cask "ghostty@tip"
 
+# エディタ
+cask "zed"
+
 # ブラウザ
 cask "google-chrome"
 
