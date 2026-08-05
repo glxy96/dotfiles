@@ -23,8 +23,8 @@ if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init -)"
 fi
 
-# HuggingFaceのTOKEN(Read Only)をキーチェーンアクセスから読み出す
-export HF_TOKEN=$(security find-generic-password -a "$USER" -s "HF_TOKEN" -w 2>/dev/null)
+# HuggingFaceのTOKEN(Read Only)をsops+ageで復号して読み出す
+export HF_TOKEN=$("$HOME/dotfiles/scripts/secret.sh" HF_TOKEN 2>/dev/null)
 
 # ghcup (Haskell)
 [ -f "$HOME/.ghcup/env" ] && . "$HOME/.ghcup/env"
@@ -99,3 +99,11 @@ fi
 zinit ice wait'!0'; zinit light zsh-users/zsh-syntax-highlighting
 ZSH_HIGHLIGHT_HIGHLIGHTERS+=(main brackets pattern cursor root)
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=244"
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/ginga/.lmstudio/bin"
+# End of LM Studio CLI section
+
+
+# Hermes Agent — ensure ~/.local/bin is on PATH
+export PATH="$HOME/.local/bin:$PATH"

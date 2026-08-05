@@ -49,6 +49,10 @@ brew "hashicorp/tap/terraform"
 brew "jq"
 brew "yq"
 
+# 秘密情報管理
+brew "age"
+brew "sops"
+
 # ファイル同期
 brew "syncthing", restart_service: :changed
 
