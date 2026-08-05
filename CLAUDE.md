@@ -111,6 +111,7 @@ macOS KeychainはmacOS専用で、新規マシンでは手動登録が必要に�
 ### 仕組み
 
 - 秘密鍵(age identity)は `~/.config/sops/age/keys.txt` に置く。**リポジトリには含まれない**。マシンごとに一度だけ、安全な経路(パスワードマネージャー、AirDrop等)で配置する
+  - **注意**: これはsopsのmacOSネイティブなデフォルト置き場ではない(macOSのデフォルトは `~/Library/Application Support/sops/age/keys.txt`、Linuxのデフォルトは同じく`~/.config/sops/age/keys.txt`)。OSによってデフォルトが違うため、`~/.config/sops/age/keys.txt` に統一した上で `SOPS_AGE_KEY_FILE` を明示exportし(`zsh/zshrc`、`scripts/secret.sh`)、OSのデフォルト挙動には依存しない設計にしている
 - 公開鍵(recipient)は `.sops.yaml` にコミットされている(公開鍵なので安全)
 - シークレット本体は `secrets/secrets.sops.yaml` に、キーごとに暗号化されたYAMLとしてコミットされている
 - 読み出しは常に `scripts/secret.sh <KEY_NAME>` 経由。ファイル全体を一括で平文化することはなく、指定した1キーの値だけを標準出力する。呼び出しは `~/.local/state/dotfiles/secrets-access.log` に `日時 / キー名 / 呼び出し元プロセス` として記録される(machine-local、コミット対象外)
