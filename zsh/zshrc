@@ -104,7 +104,7 @@ ZSH_HIGHLIGHT_HIGHLIGHTERS+=(main brackets pattern cursor root)
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=244"
 
 # Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/ginga/.lmstudio/bin"
+export PATH="$PATH:$HOME/.lmstudio/bin"
 # End of LM Studio CLI section
 
 
