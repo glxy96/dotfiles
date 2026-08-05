@@ -99,3 +99,7 @@ zsdoc/data
 # End of https://www.toptal.com/developers/gitignore/api/macos,ssh,vim,zsh
 # SSH config (machine-specific)
 ssh/config
+
+# secrets (復号結果・鍵の誤コミット防止。secrets/secrets.sops.yaml自体は暗号化済みなのでコミット対象)
+secrets/*.dec.*
+secrets/*.plain.*
