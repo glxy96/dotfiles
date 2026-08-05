@@ -114,13 +114,14 @@ macOS KeychainはmacOS専用で、新規マシンでは手動登録が必要に�
   - **注意**: これはsopsのmacOSネイティブなデフォルト置き場ではない(macOSのデフォルトは `~/Library/Application Support/sops/age/keys.txt`、Linuxのデフォルトは同じく`~/.config/sops/age/keys.txt`)。OSによってデフォルトが違うため、`~/.config/sops/age/keys.txt` に統一した上で `SOPS_AGE_KEY_FILE` を明示exportし(`zsh/zshrc`、`scripts/secret.sh`)、OSのデフォルト挙動には依存しない設計にしている
 - 公開鍵(recipient)は `.sops.yaml` にコミットされている(公開鍵なので安全)
 - シークレット本体は `secrets/secrets.sops.yaml` に、キーごとに暗号化されたYAMLとしてコミットされている
-- 読み出しは常に `scripts/secret.sh <KEY_NAME>` 経由。ファイル全体を一括で平文化することはなく、指定した1キーの値だけを標準出力する。呼び出しは `~/.local/state/dotfiles/secrets-access.log` に `日時 / キー名 / 呼び出し元プロセス` として記録される(machine-local、コミット対象外)
+- 読み出しは常に `scripts/secret.sh <KEY_NAME>` 経由。ファイル全体を一括で平文化することはなく、指定した1キーの値だけを標準出力する
+  - **注意**: `secret.sh` はあくまで便利なラッパーであり、アクセス制御の境界ではない。`sops` を直接叩けば同じ鍵で誰でも復号できるため、アクセスログのような仕組みは導入していない(容易に迂回できるログは実効性がなく、かえって「追跡できている」という誤った安心感を生むため)
 - Keychainと異なり非対話的に完了するため、対話的な確認ゲートはない。保護は鍵ファイルのパーミッション(600)とディスク暗号化(FileVault)に一本化されている。AIエージェントもこの `secret.sh` を直接呼べば必要なシークレットだけを取得できる
 
 ### よく使うコマンド
 
 ```bash
-# シークレットを1つ取得(スクリプト経由、推奨・監査ログに残る)
+# シークレットを1つ取得(スクリプト経由、推奨)
 ./scripts/secret.sh HF_TOKEN
 
 # シークレットファイルを対話的に編集(sopsが復号→$EDITORで開く→保存時に自動で再暗号化)
@@ -134,9 +135,6 @@ sops secrets/secrets.sops.yaml
 
 # ファイルが正しく暗号化されているか確認(平文が含まれていないこと)
 cat secrets/secrets.sops.yaml
-
-# 誰が・いつ・何を読み出したか確認
-cat ~/.local/state/dotfiles/secrets-access.log
 ```
 
 `export HF_TOKEN=...` のように常用するシークレットのみ `zsh/zshrc` で自動exportする(現状HF_TOKENのみ)。それ以外の新しいシークレットは、使う場所で都度 `$(./scripts/secret.sh KEY_NAME)` のように呼び出す運用とし、シェル起動のたびに全シークレットを無条件にexportすることは避ける。
