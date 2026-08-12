@@ -13,7 +13,7 @@ autoload -Uz _zinit
 
 ### 環境変数・PATH設定
 # Obsidian vaults
-export AI_VAULT_ROOT="$HOME/AI_Vault"
+export AI_VAULT_ROOT="$HOME/pkm/ai"
 export PKM_VAULT_ROOT="$HOME/pkm"
 
 # pyenv
@@ -107,6 +107,11 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=244"
 export PATH="$PATH:$HOME/.lmstudio/bin"
 # End of LM Studio CLI section
 
+# oMLX: CLI shim path
+case ":$PATH:" in
+  *":$HOME/.omlx/bin:"*) ;;
+  *) export PATH="$HOME/.omlx/bin:$PATH" ;;
+esac
 
 # Hermes Agent — ensure ~/.local/bin is on PATH
 export PATH="$HOME/.local/bin:$PATH"
