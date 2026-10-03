@@ -1,3 +1,5 @@
+Include ~/.ssh/config.d/home.conf
+
 Host github github.com
   Hostname github.com
   IdentityFile {{GITHUB_SSH_KEY}}
