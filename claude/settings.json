@@ -1,8 +1,5 @@
 {
-  "model": "sonnet",
-  "enabledPlugins": {
-    "swift-lsp@claude-plugins-official": true
-  },
+  "model": "opus",
   "hooks": {
     "Notification": [
       {
@@ -15,5 +12,9 @@
         ]
       }
     ]
-  }
+  },
+  "enabledPlugins": {
+    "swift-lsp@claude-plugins-official": true
+  },
+  "theme": "dark-ansi"
 }
