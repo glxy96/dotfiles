@@ -5,6 +5,9 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SECRETS_FILE="$SCRIPT_DIR/../secrets/secrets.sops.yaml"
 
+# 非対話シェル（AIエージェント等）では Homebrew の bin が PATH にないことがある
+export PATH="$PATH:/opt/homebrew/bin:/usr/local/bin"
+
 # OSごとのデフォルト鍵パスの違いを避けるため明示的に指定する
 export SOPS_AGE_KEY_FILE="${SOPS_AGE_KEY_FILE:-$HOME/.config/sops/age/keys.txt}"
 
